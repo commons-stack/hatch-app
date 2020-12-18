@@ -1,4 +1,4 @@
-const { HATCH_PERIOD, HATCH_MAX_GOAL, HATCH_STATE, HATCH_MIN_GOAL } = require('@1hive/apps-marketplace-shared-test-helpers/constants')
+const { HATCH_PERIOD, HATCH_MAX_GOAL, HATCH_STATE, HATCH_MIN_GOAL } = require('./helpers/constants')
 const { prepareDefaultSetup, defaultDeployParams, initializeHatch } = require('./common/deploy')
 const { now } = require('./common/utils')
 

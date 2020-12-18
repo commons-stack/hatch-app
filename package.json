@@ -29,12 +29,10 @@
     "/test"
   ],
   "dependencies": {
-    "@1hive/apps-marketplace-shared-interfaces": "^1.0.0",
     "@aragon/apps-token-manager": "^2.1.0",
     "@aragon/os": "4.2.1"
   },
   "devDependencies": {
-    "@1hive/apps-marketplace-shared-test-helpers": "^1.0.0",
     "@aragon/minime": "^1.0.0",
     "@aragon/apps-vault": "^4.1.0",
     "@aragon/buidler-aragon": "^0.2.9",

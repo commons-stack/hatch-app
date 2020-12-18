@@ -8,7 +8,7 @@ const {
   HATCH_PERIOD,
   ZERO_ADDRESS,
   PERCENT_FUNDING_FOR_BENEFICIARY,
-} = require('@1hive/apps-marketplace-shared-test-helpers/constants')
+} = require('./helpers/constants')
 const { prepareDefaultSetup, initializeHatch, defaultDeployParams } = require('./common/deploy')
 const { tokenExchangeRate, now } = require('./common/utils')
 const { assertRevert, assertBn } = require('@aragon/contract-helpers-test/src/asserts')
@@ -35,10 +35,6 @@ contract('Hatch, setup', ([anyone, appManager, someEOA]) => {
 
       it('Deploys fundraising related apps', async () => {
         assert.isTrue(web3.utils.isAddress(this.reserve.address))
-      })
-
-      it('Controller is set', async () => {
-        assert.equal(await this.hatch.controller(), this.fundraising.address)
       })
 
       it('startDate is set correctly', async () => {

@@ -4,13 +4,13 @@ const {
   PERCENT_FUNDING_FOR_BENEFICIARY,
   PERCENT_SUPPLY_OFFERED,
   PPM,
-} = require('@1hive/apps-marketplace-shared-test-helpers/constants')
+} = require('./helpers/constants')
 const { prepareDefaultSetup, defaultDeployParams, initializeHatch } = require('./common/deploy')
 const { getEvent, now } = require('./common/utils')
 const { assertRevert } = require('@aragon/contract-helpers-test/src/asserts')
 const { bn } = require('@aragon/contract-helpers-test/src/numbers')
 
-const assertExternalEvent = require('@1hive/apps-marketplace-shared-test-helpers/assertExternalEvent')
+const assertExternalEvent = require('./helpers/assertExternalEvent')
 
 const BUYER_BALANCE = 2 * HATCH_MAX_GOAL
 
@@ -69,10 +69,6 @@ contract('Hatch, close() functionality', ([anyone, appManager, buyer1]) => {
           const balanceOfBeneficiary = await this.projectToken.balanceOf(appManager)
 
           assert.equal(parseInt(balanceOfBeneficiary.toNumber()), parseInt(Math.floor(supply.toNumber() * (1 - PERCENT_SUPPLY_OFFERED / PPM))))
-        })
-
-        it('Continuous fundraising campaign is started', async () => {
-          assertExternalEvent(closeReceipt, 'OpenTrading()')
         })
 
         it('Sale cannot be closed again', async () => {

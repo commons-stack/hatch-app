@@ -1,4 +1,4 @@
-const { HATCH_STATE, HATCH_PERIOD, HATCH_MAX_GOAL, ZERO_ADDRESS } = require('@1hive/apps-marketplace-shared-test-helpers/constants')
+const { HATCH_STATE, HATCH_PERIOD, HATCH_MAX_GOAL, ZERO_ADDRESS } = require('./helpers/constants')
 const { sendTransaction, contributionToProjectTokens, getEvent, now } = require('./common/utils')
 const { prepareDefaultSetup, defaultDeployParams, initializeHatch, deployDefaultSetup } = require('./common/deploy')
 const { assertRevert, assertBn } = require('@aragon/contract-helpers-test/src/asserts')

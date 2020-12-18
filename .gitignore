@@ -1,2 +1,15 @@
+# Dependencies
+node_modules
 
-/build
+# Build dirs
+.cache/
+build/
+dist/
+
+.DS_Store
+package-lock.json
+yarn.lock
+artifacts
+cache
+coverage
+coverage.json

@@ -1,4 +1,4 @@
-const { VESTING_CLIFF_PERIOD, VESTING_COMPLETE_PERIOD } = require('@1hive/apps-marketplace-shared-test-helpers/constants')
+const { VESTING_CLIFF_PERIOD, VESTING_COMPLETE_PERIOD } = require('./helpers/constants')
 const { prepareDefaultSetup, defaultDeployParams, initializeHatch } = require('./common/deploy')
 const { contributionToProjectTokens, now } = require('./common/utils')
 const { assertBn } = require('@aragon/contract-helpers-test/src/asserts')

@@ -9,7 +9,6 @@ const MiniMeToken = artifacts.require('@aragon/minime/contracts/MiniMeToken')
 
 const TokenManager = artifacts.require('TokenManager.sol')
 const Vault = artifacts.require('Vault.sol')
-const MarketplaceController = artifacts.require('MarketplaceControllerMock.sol')
 const Hatch = artifacts.require('HatchMock.sol')
 const { newDao, installNewApp } = require('@aragon/contract-helpers-test/src/aragon-os')
 
@@ -25,7 +24,7 @@ const {
   VESTING_COMPLETE_PERIOD,
   PERCENT_SUPPLY_OFFERED,
   PERCENT_FUNDING_FOR_BENEFICIARY,
-} = require('@1hive/apps-marketplace-shared-test-helpers/constants')
+} = require('../helpers/constants')
 
 const { now } = require('./utils')
 
@@ -57,21 +56,6 @@ const deploy = {
   },
   initializeReserve: async test => {
     await test.reserve.initialize()
-  },
-
-  /* FUNDRAISING */
-  deployFundraising: async (test, appManager) => {
-    const appBase = await MarketplaceController.new()
-    test.fundraising = await MarketplaceController.at(await installNewApp(
-      test.dao,
-      nameHash('marketplace-controller.aragonpm.test'),
-      appBase.address,
-      appManager
-    ))
-  },
-  setFundraisingPermissions: async (test, appManager) => {},
-  initializeFundraising: async test => {
-    await test.fundraising.initialize()
   },
 
   /* VAULT */
@@ -136,7 +120,6 @@ const deploy = {
   },
   initializeHatch: async (test, params) => {
     const paramsArr = [
-      params.fundraising,
       params.tokenManager,
       params.reserve,
       params.beneficiary,
@@ -156,7 +139,6 @@ const deploy = {
   },
   defaultDeployParams: (test, beneficiary) => {
     return {
-      fundraising: test.fundraising.address,
       contributionToken: test.contributionToken.address,
       tokenManager: test.tokenManager.address,
       vestingCliffPeriod: VESTING_CLIFF_PERIOD,
@@ -190,18 +172,15 @@ const deploy = {
 
     await deploy.deployVault(test, appManager)
     await deploy.deployReserve(test, appManager)
-    await deploy.deployFundraising(test, appManager)
     await deploy.deployHatch(test, appManager)
 
     await deploy.setVaultPermissions(test, appManager)
     await deploy.setReservePermissions(test, appManager)
-    await deploy.setFundraisingPermissions(test, appManager)
     await deploy.setHatchPermissions(test, appManager)
     await deploy.setTokenManagerPermissions(test, appManager)
 
     await deploy.initializeVault(test)
     await deploy.initializeReserve(test)
-    await deploy.initializeFundraising(test)
     await deploy.initializeTokenManager(test)
   },
   deployDefaultSetup: async (test, appManager) => {

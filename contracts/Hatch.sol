@@ -8,11 +8,9 @@ import "@aragon/os/contracts/lib/math/SafeMath.sol";
 import "@aragon/os/contracts/lib/math/SafeMath64.sol";
 import "@aragon/os/contracts/lib/token/ERC20.sol";
 import "@aragon/apps-token-manager/contracts/TokenManager.sol";
-import "@1hive/apps-marketplace-shared-interfaces/contracts/IHatch.sol";
-import "@1hive/apps-marketplace-shared-interfaces/contracts/IMarketplaceController.sol";
 
 
-contract Hatch is IHatch, EtherTokenConstant, IsContract, AragonApp {
+contract Hatch is EtherTokenConstant, IsContract, AragonApp {
     using SafeERC20  for ERC20;
     using SafeMath   for uint256;
     using SafeMath64 for uint64;
@@ -50,7 +48,6 @@ contract Hatch is IHatch, EtherTokenConstant, IsContract, AragonApp {
         Closed       // hatch has reached min goal within period, has been closed and trading has been open
     }
 
-    IMarketplaceController                          public controller;
     TokenManager                                    public tokenManager;
     ERC20                                           public token;
     address                                         public reserve;
@@ -83,7 +80,6 @@ contract Hatch is IHatch, EtherTokenConstant, IsContract, AragonApp {
 
     /**
      * @notice Initialize hatch
-     * @param _controller               The address of the controller contract
      * @param _tokenManager             The address of the [bonded] token manager contract
      * @param _reserve                  The address of the reserve [pool] contract
      * @param _beneficiary              The address of the beneficiary [to whom a percentage of the raised funds is be to be sent]
@@ -99,7 +95,6 @@ contract Hatch is IHatch, EtherTokenConstant, IsContract, AragonApp {
      * @param _openDate                 The date upon which that hatch is to be open [ignored if 0]
     */
     function initialize(
-        IMarketplaceController       _controller,
         TokenManager                 _tokenManager,
         address                      _reserve,
         address                      _beneficiary,
@@ -117,7 +112,6 @@ contract Hatch is IHatch, EtherTokenConstant, IsContract, AragonApp {
         external
         onlyInit
     {
-        require(isContract(_controller),                                            ERROR_CONTRACT_IS_EOA);
         require(isContract(_tokenManager),                                          ERROR_CONTRACT_IS_EOA);
         require(isContract(_reserve),                                               ERROR_CONTRACT_IS_EOA);
         require(_beneficiary != address(0),                                         ERROR_INVALID_BENEFICIARY);
@@ -133,7 +127,6 @@ contract Hatch is IHatch, EtherTokenConstant, IsContract, AragonApp {
 
         initialized();
 
-        controller = _controller;
         tokenManager = _tokenManager;
         token = ERC20(_tokenManager.token());
         reserve = _reserve;
@@ -348,8 +341,6 @@ contract Hatch is IHatch, EtherTokenConstant, IsContract, AragonApp {
             vestingCompleteDate,
             false /* revokable */
         );
-        // open trading
-        controller.openTrading();
 
         emit Close();
     }
