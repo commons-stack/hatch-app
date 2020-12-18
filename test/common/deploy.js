@@ -1,5 +1,5 @@
 const getContract = name => artifacts.require(name)
-const { hash } = require('eth-ens-namehash')
+const { hash: nameHash } = require('eth-ens-namehash')
 
 const DAOFactory = artifacts.require('@aragon/core/contracts/factory/DAOFactory')
 const EVMScriptRegistryFactory = artifacts.require('@aragon/core/contracts/factory/EVMScriptRegistryFactory')
@@ -9,8 +9,9 @@ const MiniMeToken = artifacts.require('@aragon/minime/contracts/MiniMeToken')
 
 const TokenManager = artifacts.require('TokenManager.sol')
 const Vault = artifacts.require('Vault.sol')
-const FundraisingController = artifacts.require('MarketplaceControllerMock.sol')
+const MarketplaceController = artifacts.require('MarketplaceControllerMock.sol')
 const Hatch = artifacts.require('HatchMock.sol')
+const { newDao, installNewApp } = require('@aragon/contract-helpers-test/src/aragon-os')
 
 
 const {
@@ -29,28 +30,24 @@ const {
 const { now } = require('./utils')
 
 const deploy = {
-  getProxyAddress: receipt => receipt.logs.filter(l => l.event === 'NewAppProxy')[0].args.proxy,
 
   /* DAO */
   deployDAO: async (test, daoManager) => {
-    const kernelBase = await getContract('Kernel').new(true) // petrify immediately
-    const aclBase = await getContract('ACL').new()
-    const regFact = await EVMScriptRegistryFactory.new()
-    const daoFact = await DAOFactory.new(kernelBase.address, aclBase.address, regFact.address)
-    const daoReceipt = await daoFact.newDAO(daoManager)
-    test.dao = await Kernel.at(daoReceipt.logs.filter(l => l.event === 'DeployDAO')[0].args.dao)
-    test.acl = await ACL.at(await test.dao.acl())
-    test.APP_MANAGER_ROLE = await kernelBase.APP_MANAGER_ROLE()
-  },
-  setDAOPermissions: async (test, daoManager) => {
-    await test.acl.createPermission(daoManager, test.dao.address, test.APP_MANAGER_ROLE, daoManager, { from: daoManager })
+    const { dao, acl } = await newDao(daoManager)
+    test.dao = dao
+    test.acl = acl
+    test.APP_MANAGER_ROLE = await dao.APP_MANAGER_ROLE()
   },
 
   /* RESERVE */
   deployReserve: async (test, appManager) => {
     const appBase = await Vault.new()
-    const receipt = await test.dao.newAppInstance(hash('pool.aragonpm.eth'), appBase.address, '0x', false, { from: appManager })
-    test.reserve = await Vault.at(deploy.getProxyAddress(receipt))
+    test.reserve = await Vault.at(await installNewApp(
+      test.dao,
+      nameHash('pool.aragonpm.test'),
+      appBase.address,
+      appManager
+    ))
     test.RESERVE_TRANSFER_ROLE = await appBase.TRANSFER_ROLE()
     // test.RESERVE_ADD_PROTECTED_TOKEN_ROLE = await appBase.ADD_PROTECTED_TOKEN_ROLE()
   },
@@ -64,9 +61,13 @@ const deploy = {
 
   /* FUNDRAISING */
   deployFundraising: async (test, appManager) => {
-    const appBase = await FundraisingController.new()
-    const receipt = await test.dao.newAppInstance(hash('fundraising-controller.aragonpm.eth'), appBase.address, '0x', false, { from: appManager })
-    test.fundraising = await FundraisingController.at(deploy.getProxyAddress(receipt))
+    const appBase = await MarketplaceController.new()
+    test.fundraising = await MarketplaceController.at(await installNewApp(
+      test.dao,
+      nameHash('marketplace-controller.aragonpm.test'),
+      appBase.address,
+      appManager
+    ))
   },
   setFundraisingPermissions: async (test, appManager) => {},
   initializeFundraising: async test => {
@@ -76,8 +77,12 @@ const deploy = {
   /* VAULT */
   deployVault: async (test, appManager) => {
     const appBase = await Vault.new()
-    const receipt = await test.dao.newAppInstance(hash('vault.aragonpm.eth'), appBase.address, '0x', false, { from: appManager })
-    test.vault = await Vault.at(deploy.getProxyAddress(receipt))
+    test.vault = await Vault.at(await installNewApp(
+      test.dao,
+      nameHash('vault.aragonpm.eth'),
+      appBase.address,
+      appManager
+    ))
   },
   setVaultPermissions: async (test, appManager) => {
     // No permissions
@@ -89,8 +94,12 @@ const deploy = {
   /* TOKEN MANAGER */
   deployTokenManager: async (test, appManager) => {
     const appBase = await TokenManager.new()
-    const receipt = await test.dao.newAppInstance(hash('token-manager.aragonpm.eth'), appBase.address, '0x', false, { from: appManager })
-    test.tokenManager = await TokenManager.at(deploy.getProxyAddress(receipt))
+    test.tokenManager = await TokenManager.at(await installNewApp(
+      test.dao,
+      nameHash('token-manager.aragonpm.eth'),
+      appBase.address,
+      appManager
+    ))
     test.TOKEN_MANAGER_MINT_ROLE = await appBase.MINT_ROLE()
     test.TOKEN_MANAGER_ISSUE_ROLE = await appBase.ISSUE_ROLE()
     test.TOKEN_MANAGER_ASSIGN_ROLE = await appBase.ASSIGN_ROLE()
@@ -112,8 +121,12 @@ const deploy = {
   /* HATCH */
   deployHatch: async (test, appManager) => {
     const appBase = await Hatch.new()
-    const receipt = await test.dao.newAppInstance(hash('hatch.aragonpm.eth'), appBase.address, '0x', false, { from: appManager })
-    test.hatch = await Hatch.at(deploy.getProxyAddress(receipt))
+    test.hatch = await Hatch.at(await installNewApp(
+      test.dao,
+      nameHash('hatch.aragonpm.eth'),
+      appBase.address,
+      appManager
+    ))
     test.HATCH_OPEN_ROLE = await appBase.OPEN_ROLE()
     test.HATCH_CONTRIBUTE_ROLE = await appBase.CONTRIBUTE_ROLE()
   },
@@ -171,7 +184,6 @@ const deploy = {
   /* ~EVERYTHING~ */
   prepareDefaultSetup: async (test, appManager) => {
     await deploy.deployDAO(test, appManager)
-    deploy.setDAOPermissions(test, appManager)
 
     await deploy.deployTokens(test)
     await deploy.deployTokenManager(test, appManager)
