@@ -19,9 +19,11 @@ contract Hatch is EtherTokenConstant, IsContract, AragonApp {
     Hardcoded constants to save gas
     bytes32 public constant OPEN_ROLE       = keccak256("OPEN_ROLE");
     bytes32 public constant CONTRIBUTE_ROLE = keccak256("CONTRIBUTE_ROLE");
+    bytes32 public constant CLOSE_ROLE      = keccak256("CLOSE_ROLE");
     */
     bytes32 public constant OPEN_ROLE       = 0xefa06053e2ca99a43c97c4a4f3d8a394ee3323a8ff237e625fba09fe30ceb0a4;
     bytes32 public constant CONTRIBUTE_ROLE = 0x9ccaca4edf2127f20c425fdd86af1ba178b9e5bee280cd70d88ac5f6874c4f07;
+    bytes32 public constant CLOSE_ROLE      = 0x78844962b347caf400e109846dc948d8df0fc5b2f795edb688517fc687580cd4;
 
     uint256 public constant PPM = 1000000; // 0% = 0 * 10 ** 4; 1% = 1 * 10 ** 4; 100% = 100 * 10 ** 4
 
@@ -188,7 +190,7 @@ contract Hatch is EtherTokenConstant, IsContract, AragonApp {
     /**
      * @notice Close hatch and open trading
     */
-    function close() external nonReentrant isInitialized {
+    function close() external nonReentrant auth(CLOSE_ROLE) {
         require(state() == State.GoalReached, ERROR_INVALID_STATE);
 
         _close();
