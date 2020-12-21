@@ -56,8 +56,8 @@ contract Hatch is EtherTokenConstant, IsContract, AragonApp {
     address                                         public beneficiary;
     address                                         public contributionToken;
 
-    uint256                                         public maxGoal;
     uint256                                         public minGoal;
+    uint256                                         public maxGoal;
     uint64                                          public period;
     uint256                                         public exchangeRate;
     uint64                                          public vestingCliffPeriod;
@@ -86,8 +86,8 @@ contract Hatch is EtherTokenConstant, IsContract, AragonApp {
      * @param _reserve                  The address of the reserve [pool] contract
      * @param _beneficiary              The address of the beneficiary [to whom a percentage of the raised funds is be to be sent]
      * @param _contributionToken        The address of the token to be used to contribute
-     * @param _maxGoal                  The max goal to be reached by the end of that hatch [in contribution token wei]
      * @param _minGoal                  The min goal to be reached by the end of that hatch [in contribution token wei]
+     * @param _maxGoal                  The max goal to be reached by the end of that hatch [in contribution token wei]
      * @param _period                   The period within which to accept contribution for that hatch
      * @param _exchangeRate             The exchangeRate [= 1/price] at which [bonded] tokens are to be purchased for that hatch [in PPM]
      * @param _vestingCliffPeriod       The period during which purchased [bonded] tokens are to be cliffed
@@ -101,8 +101,8 @@ contract Hatch is EtherTokenConstant, IsContract, AragonApp {
         address                      _reserve,
         address                      _beneficiary,
         address                      _contributionToken,
-        uint256                      _maxGoal,
         uint256                      _minGoal,
+        uint256                      _maxGoal,
         uint64                       _period,
         uint256                      _exchangeRate,
         uint64                       _vestingCliffPeriod,
@@ -134,8 +134,8 @@ contract Hatch is EtherTokenConstant, IsContract, AragonApp {
         reserve = _reserve;
         beneficiary = _beneficiary;
         contributionToken = _contributionToken;
-        maxGoal = _maxGoal;
         minGoal = _minGoal;
+        maxGoal = _maxGoal;
         period = _period;
         exchangeRate = _exchangeRate;
         vestingCliffPeriod = _vestingCliffPeriod;
