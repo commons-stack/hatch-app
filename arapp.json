@@ -30,7 +30,10 @@
     {
       "name": "Contribute to hatch",
       "id": "CONTRIBUTE_ROLE",
-      "params": []
+      "params": [
+        "Contributor",
+        "Amount"
+      ]
     },
     {
       "name": "Close the hatch",

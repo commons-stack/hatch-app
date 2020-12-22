@@ -160,10 +160,9 @@ contract Hatch is EtherTokenConstant, IsContract, AragonApp {
 
     /**
      * @notice Contribute to the hatch up to `@tokenAmount(self.contributionToken(): address, _value)`
-     * @param _contributor The address of the contributor
      * @param _value       The amount of contribution token to be spent
     */
-    function contribute(address _contributor, uint256 _value) external payable nonReentrant auth(CONTRIBUTE_ROLE) {
+    function contribute(uint256 _value) external payable authP(CONTRIBUTE_ROLE, arr(msg.sender, _value)) {
         require(state() == State.Funding, ERROR_INVALID_STATE);
         require(_value != 0,              ERROR_INVALID_CONTRIBUTE_VALUE);
 
@@ -173,7 +172,7 @@ contract Hatch is EtherTokenConstant, IsContract, AragonApp {
             require(msg.value == 0,      ERROR_INVALID_CONTRIBUTE_VALUE);
         }
 
-        _contribute(_contributor, _value);
+        _contribute(msg.sender, _value);
     }
 
     /**
@@ -237,6 +236,10 @@ contract Hatch is EtherTokenConstant, IsContract, AragonApp {
         } else {
             return State.Refunding;
         }
+    }
+
+    function balanceOf(address _who) public view isInitialized returns (uint256) {
+        return contributionToken == ETH ? _who.balance : ERC20(contributionToken).staticBalanceOf(_who);
     }
 
     /***** internal functions *****/
