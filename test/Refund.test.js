@@ -32,12 +32,12 @@ contract('Hatch, refund() functionality', ([anyone, appManager, buyer1, buyer2, 
     describe('When purchases have been made and the sale is Refunding', () => {
       before(async () => {
         // Make a few purchases, careful not to reach the funding goal.
-        await this.hatch.contribute(buyer1, BUYER_BALANCE, { from: buyer1 }) // Spends everything in one purchase
-        await this.hatch.contribute(buyer2, BUYER_BALANCE / 2, { from: buyer2 })
-        await this.hatch.contribute(buyer2, BUYER_BALANCE / 2, { from: buyer2 }) // Spends everything in two purchases
-        await this.hatch.contribute(buyer3, BUYER_BALANCE / 2, { from: buyer3 }) // Spends half
-        await this.hatch.contribute(buyer5, 1, { from: buyer5 }) // Spends a miserable amount xD
-        await this.hatch.contribute(buyer5, 1, { from: buyer5 }) // And again
+        await this.hatch.contribute(BUYER_BALANCE, { from: buyer1 }) // Spends everything in one purchase
+        await this.hatch.contribute(BUYER_BALANCE / 2, { from: buyer2 })
+        await this.hatch.contribute(BUYER_BALANCE / 2, { from: buyer2 }) // Spends everything in two purchases
+        await this.hatch.contribute(BUYER_BALANCE / 2, { from: buyer3 }) // Spends half
+        await this.hatch.contribute(1, { from: buyer5 }) // Spends a miserable amount xD
+        await this.hatch.contribute(1, { from: buyer5 }) // And again
 
         this.hatch.mockSetTimestamp(startDate + HATCH_PERIOD)
       })
@@ -115,7 +115,7 @@ contract('Hatch, refund() functionality', ([anyone, appManager, buyer1, buyer2, 
         await this.contributionToken.approve(this.hatch.address, HATCH_MAX_GOAL, { from: buyer4 })
 
         const leftToMinGoal = bn(HATCH_MIN_GOAL).sub(bn(await this.hatch.totalRaised()))
-        await this.hatch.contribute(buyer4, leftToMinGoal, { from: buyer4 })
+        await this.hatch.contribute(leftToMinGoal, { from: buyer4 })
       })
 
       it('Sale state is Funding if period has not ended', async () => {

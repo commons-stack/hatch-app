@@ -31,7 +31,7 @@ contract('Hatch, close() functionality', ([anyone, appManager, buyer1]) => {
         this.hatch.mockSetTimestamp(startDate + 1)
 
         // Make a single purchase that reaches the max funding goal
-        await this.hatch.contribute(buyer1, HATCH_MAX_GOAL)
+        await this.hatch.contribute(HATCH_MAX_GOAL, {from: buyer1})
       })
 
       it('Sale state is still GoalReached', async () => {

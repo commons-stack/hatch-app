@@ -162,7 +162,7 @@ contract Hatch is EtherTokenConstant, IsContract, AragonApp {
      * @notice Contribute to the hatch up to `@tokenAmount(self.contributionToken(): address, _value)`
      * @param _value       The amount of contribution token to be spent
     */
-    function contribute(uint256 _value) external payable authP(CONTRIBUTE_ROLE, arr(msg.sender, _value)) {
+    function contribute(uint256 _value) external payable nonReentrant authP(CONTRIBUTE_ROLE, arr(msg.sender, _value)) {
         require(state() == State.Funding, ERROR_INVALID_STATE);
         require(_value != 0,              ERROR_INVALID_CONTRIBUTE_VALUE);
 

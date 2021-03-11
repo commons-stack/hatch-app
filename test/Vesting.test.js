@@ -25,7 +25,7 @@ contract('Hatch, vesting functionality', ([anyone, appManager, buyer]) => {
         }
         this.hatch.mockSetTimestamp(startDate + 1)
 
-        await this.hatch.contribute(buyer, BUYER_BALANCE, { from: buyer })
+        await this.hatch.contribute(BUYER_BALANCE, { from: buyer })
 
         const vestingData = await this.tokenManager.getVesting(buyer, 0)
         vestedAmount = vestingData[0]

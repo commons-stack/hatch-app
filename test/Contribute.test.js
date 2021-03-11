@@ -23,7 +23,7 @@ contract('Hatch, contribute() functionality', ([anyone, appManager, buyer1, buye
   }
 
   const contribute = (sender, amount, useETH) => {
-    return this.hatch.contribute(sender, amount, { from: sender, value: useETH ? amount : 0 })
+    return this.hatch.contribute(amount, { from: sender, value: useETH ? amount : 0 })
   }
 
   const itAllowsUsersToContribute = (useETH, startDate) => {
@@ -135,8 +135,8 @@ contract('Hatch, contribute() functionality', ([anyone, appManager, buyer1, buye
         } else {
           it('Reverts if the ETH amount sent does not match the specified amount', async () => {
             const amount = 2
-            await assertRevert(this.hatch.contribute(buyer1, amount, { value: amount - 1 }), 'HATCH_INVALID_CONTRIBUTE_VALUE')
-            await assertRevert(this.hatch.contribute(buyer1, amount, { value: amount + 1 }), 'HATCH_INVALID_CONTRIBUTE_VALUE')
+            await assertRevert(this.hatch.contribute(amount, { value: amount - 1 }), 'HATCH_INVALID_CONTRIBUTE_VALUE')
+            await assertRevert(this.hatch.contribute(amount, { value: amount + 1 }), 'HATCH_INVALID_CONTRIBUTE_VALUE')
           })
         }
 

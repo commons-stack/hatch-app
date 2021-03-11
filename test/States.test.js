@@ -45,7 +45,7 @@ contract('Hatch, states validation', ([anyone, appManager, buyer]) => {
 
           describe('When purchases are made, not reaching the min funding goal', () => {
             before(async () => {
-              await this.hatch.contribute(buyer, HATCH_MIN_GOAL / 2, { from: buyer })
+              await this.hatch.contribute(HATCH_MIN_GOAL / 2, { from: buyer })
             })
 
             it('The state is still Funding', async () => {
@@ -66,7 +66,7 @@ contract('Hatch, states validation', ([anyone, appManager, buyer]) => {
           describe('When purchases are made, reaching the min funding goal before the funding period elapsed', () => {
             before(async () => {
               this.hatch.mockSetTimestamp(startDate + HATCH_PERIOD / 2)
-              await this.hatch.contribute(buyer, HATCH_MIN_GOAL / 2, { from: buyer })
+              await this.hatch.contribute(HATCH_MIN_GOAL / 2, { from: buyer })
             })
 
             it('The state is Funding', async () => {
@@ -86,7 +86,7 @@ contract('Hatch, states validation', ([anyone, appManager, buyer]) => {
             describe('When within the funding period and having reached the max funding goal', () => {
               before(async () => {
                 this.hatch.mockSetTimestamp(startDate + HATCH_PERIOD / 2)
-                await this.hatch.contribute(buyer, HATCH_MAX_GOAL, { from: buyer })
+                await this.hatch.contribute(HATCH_MAX_GOAL, { from: buyer })
               })
 
               it('The state is GoalReached', async () => {
