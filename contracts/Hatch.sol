@@ -8,9 +8,10 @@ import "@aragon/os/contracts/lib/math/SafeMath.sol";
 import "@aragon/os/contracts/lib/math/SafeMath64.sol";
 import "@aragon/os/contracts/lib/token/ERC20.sol";
 import "@aragon/apps-token-manager/contracts/TokenManager.sol";
+import "@aragon/os/contracts/acl/IACLOracle.sol";
 
 
-contract Hatch is EtherTokenConstant, IsContract, AragonApp {
+contract Hatch is EtherTokenConstant, IsContract, AragonApp, IACLOracle {
     using SafeERC20  for ERC20;
     using SafeMath   for uint256;
     using SafeMath64 for uint64;
@@ -240,6 +241,13 @@ contract Hatch is EtherTokenConstant, IsContract, AragonApp {
 
     function balanceOf(address _who) public view isInitialized returns (uint256) {
         return contributionToken == ETH ? _who.balance : ERC20(contributionToken).staticBalanceOf(_who);
+    }
+
+    /**
+     * @dev Can perform only when the token vesting has finished
+     */
+    function canPerform(address, address, bytes32, uint256[]) external view isInitialized returns (bool) {
+        return vestingCompleteDate != 0 && getTimestamp64() >= vestingCompleteDate;
     }
 
     /***** internal functions *****/

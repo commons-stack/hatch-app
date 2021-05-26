@@ -1,4 +1,4 @@
-const { VESTING_CLIFF_PERIOD, VESTING_COMPLETE_PERIOD } = require('./helpers/constants')
+const { VESTING_CLIFF_PERIOD, VESTING_COMPLETE_PERIOD, ZERO_ADDRESS } = require('./helpers/constants')
 const { prepareDefaultSetup, defaultDeployParams, initializeHatch } = require('./common/deploy')
 const { contributionToProjectTokens, now } = require('./common/utils')
 const { assertBn } = require('@aragon/contract-helpers-test/src/asserts')
@@ -56,6 +56,19 @@ contract('Hatch, vesting functionality', ([anyone, appManager, buyer]) => {
 
       it('Token manager registers the vestings as revokable', async () => {
         assert.isTrue(vestingRevokable)
+      })
+
+      describe('ACL Oracle', () => {
+        it('Can not perform before vesting is complete', async () => {
+          assertBn(await this.hatch.vestingCompleteDate(), bn(startDate + VESTING_COMPLETE_PERIOD))
+          await this.hatch.mockSetTimestamp((await this.hatch.vestingCompleteDate()).sub(bn(1)))
+          assert.isFalse(await this.hatch.canPerform(ZERO_ADDRESS, ZERO_ADDRESS, '0x', []))
+        })
+
+        it('Can perform after vesting is complete', async () => {
+          await this.hatch.mockSetTimestamp(await this.hatch.vestingCompleteDate())
+          assert.isTrue(await this.hatch.canPerform(ZERO_ADDRESS, ZERO_ADDRESS, '0x', []))
+        })
       })
     })
   }
