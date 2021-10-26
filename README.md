@@ -5,7 +5,7 @@ The Hatch application allows organizations to set a minimum fundraising target t
 
 #### 🐲 Project Stage: Production
 
-The Hatch app is published to `martetplace-hatch.open.aragonpm.eth` on xDAI and Rinkeby network. If you experience any issues or are interested in contributing please see review our [open issues](https://github.com/tecommons/hatch-app).
+The Hatch app is published to `marketplace-hatch.open.aragonpm.eth` on xDAI and Rinkeby networks. If you experience any issues or are interested in contributing please see review our [open issues](https://github.com/CommonsSwarm/hatch-app).
 
 #### 🚨 Security Review Status: pre-audit
 
