@@ -2,7 +2,7 @@ module.exports = {
   norpc: true,
   copyPackages: [
     '@aragon/os',
-    '@aragon/contract-helpers-test',
+    '@1hive/contract-helpers-test',
     '@aragon/minime',
     '@aragon/apps-token-manager',
     '@aragon/apps-vault',
@@ -10,7 +10,7 @@ module.exports = {
   skipFiles: [
     'test',
     '@aragon/os',
-    '@aragon/contract-helpers-test',
+    '@1hive/contract-helpers-test',
     '@aragon/minime',
     '@aragon/apps-token-manager',
     '@aragon/apps-vault',

@@ -1,8 +1,8 @@
 const { HATCH_STATE, HATCH_PERIOD, HATCH_MAX_GOAL, ZERO_ADDRESS } = require('./helpers/constants')
 const { sendTransaction, contributionToProjectTokens, getEvent, now } = require('./common/utils')
 const { prepareDefaultSetup, defaultDeployParams, initializeHatch, deployDefaultSetup } = require('./common/deploy')
-const { assertRevert, assertBn } = require('@aragon/contract-helpers-test/src/asserts')
-const { bn } = require('@aragon/contract-helpers-test/src/numbers')
+const { assertRevert, assertBn } = require('@1hive/contract-helpers-test/src/asserts')
+const { bn } = require('@1hive/contract-helpers-test/src/numbers')
 
 contract('Hatch, contribute() functionality', ([anyone, appManager, buyer1, buyer2]) => {
   const initializeHatchWithERC20 = async startDate => {

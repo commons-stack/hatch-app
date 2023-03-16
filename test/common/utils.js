@@ -1,5 +1,5 @@
 const { HATCH_EXCHANGE_RATE, PPM } = require('../helpers/constants')
-const { bn } = require('@aragon/contract-helpers-test/src/numbers')
+const { bn } = require('@1hive/contract-helpers-test/src/numbers')
 
 const utils = {
   getEvent: (tx, eventName) => tx.logs.filter(log => log.event.includes(eventName))[0],

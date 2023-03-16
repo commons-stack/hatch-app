@@ -1,4 +1,4 @@
-const { bn, bigExp } = require('@aragon/contract-helpers-test/src/numbers')
+const { bn, bigExp } = require('@1hive/contract-helpers-test/src/numbers')
 
 /* time */
 const DAYS = 24 * 3600

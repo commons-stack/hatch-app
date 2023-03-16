@@ -11,8 +11,8 @@ const {
 } = require('./helpers/constants')
 const { prepareDefaultSetup, initializeHatch, defaultDeployParams } = require('./common/deploy')
 const { tokenExchangeRate, now } = require('./common/utils')
-const { assertRevert, assertBn } = require('@aragon/contract-helpers-test/src/asserts')
-const { bn } = require('@aragon/contract-helpers-test/src/numbers')
+const { assertRevert, assertBn } = require('@1hive/contract-helpers-test/src/asserts')
+const { bn } = require('@1hive/contract-helpers-test/src/numbers')
 
 contract('Hatch, setup', ([anyone, appManager, someEOA]) => {
   describe('When deploying the app with valid parameters', () => {

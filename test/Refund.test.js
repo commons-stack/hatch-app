@@ -1,8 +1,8 @@
 const { HATCH_PERIOD, HATCH_STATE, HATCH_MAX_GOAL, HATCH_MIN_GOAL } = require('./helpers/constants')
 const { contributionToProjectTokens, getEvent, now } = require('./common/utils')
 const { prepareDefaultSetup, defaultDeployParams, initializeHatch } = require('./common/deploy')
-const { assertRevert, assertBn } = require('@aragon/contract-helpers-test/src/asserts')
-const { bn } = require('@aragon/contract-helpers-test/src/numbers')
+const { assertRevert, assertBn } = require('@1hive/contract-helpers-test/src/asserts')
+const { bn } = require('@1hive/contract-helpers-test/src/numbers')
 
 const BUYER_BALANCE = 1000
 

@@ -1,16 +1,11 @@
-const getContract = name => artifacts.require(name)
 const { hash: nameHash } = require('eth-ens-namehash')
 
-const DAOFactory = artifacts.require('@aragon/core/contracts/factory/DAOFactory')
-const EVMScriptRegistryFactory = artifacts.require('@aragon/core/contracts/factory/EVMScriptRegistryFactory')
-const ACL = artifacts.require('@aragon/core/contracts/acl/ACL')
-const Kernel = artifacts.require('@aragon/core/contracts/kernel/Kernel')
-const MiniMeToken = artifacts.require('@aragon/minime/contracts/MiniMeToken')
+const MiniMeToken = artifacts.require('@aragon/minime/contracts/MiniMeToken.sol:MiniMeToken')
 
 const TokenManager = artifacts.require('TokenManager.sol')
 const Vault = artifacts.require('Vault.sol')
 const Hatch = artifacts.require('HatchMock.sol')
-const { newDao, installNewApp } = require('@aragon/contract-helpers-test/src/aragon-os')
+const { newDao, installNewApp } = require('@1hive/contract-helpers-test/src/aragon-os')
 
 
 const {

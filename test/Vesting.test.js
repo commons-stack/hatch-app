@@ -1,8 +1,8 @@
 const { VESTING_CLIFF_PERIOD, VESTING_COMPLETE_PERIOD, ZERO_ADDRESS } = require('./helpers/constants')
 const { prepareDefaultSetup, defaultDeployParams, initializeHatch } = require('./common/deploy')
 const { contributionToProjectTokens, now } = require('./common/utils')
-const { assertBn } = require('@aragon/contract-helpers-test/src/asserts')
-const { bn } = require('@aragon/contract-helpers-test/src/numbers')
+const { assertBn } = require('@1hive/contract-helpers-test/src/asserts')
+const { bn } = require('@1hive/contract-helpers-test/src/numbers')
 
 const BUYER_BALANCE = 20000
 
