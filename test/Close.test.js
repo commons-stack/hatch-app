@@ -8,9 +8,6 @@ const {
 const { prepareDefaultSetup, defaultDeployParams, initializeHatch } = require('./common/deploy')
 const { getEvent, now } = require('./common/utils')
 const { assertRevert } = require('@1hive/contract-helpers-test/src/asserts')
-const { bn } = require('@1hive/contract-helpers-test/src/numbers')
-
-const assertExternalEvent = require('./helpers/assertExternalEvent')
 
 const BUYER_BALANCE = 2 * HATCH_MAX_GOAL
 

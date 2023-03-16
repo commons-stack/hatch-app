@@ -1,4 +1,4 @@
-const { HATCH_PERIOD, HATCH_MAX_GOAL, HATCH_STATE, HATCH_MIN_GOAL } = require('./helpers/constants')
+const { HATCH_PERIOD, HATCH_MAX_GOAL, HATCH_STATE, HATCH_MIN_GOAL, ZERO_ADDRESS } = require('./helpers/constants')
 const { prepareDefaultSetup, defaultDeployParams, initializeHatch } = require('./common/deploy')
 const { now } = require('./common/utils')
 
@@ -33,6 +33,11 @@ contract('Hatch, states validation', ([anyone, appManager, buyer]) => {
         it('The state is Funding', async () => {
           assert.equal(await getState(this), HATCH_STATE.FUNDING)
         })
+
+        it('Contribution token recoverability is not possible', async () => {
+          assert.isTrue(await this.hatch.allowRecoverability(ZERO_ADDRESS));
+          assert.isFalse(await this.hatch.allowRecoverability(this.contributionToken.address));
+        });
 
         describe('When the funding period is still running', () => {
           before(async () => {
@@ -112,6 +117,11 @@ contract('Hatch, states validation', ([anyone, appManager, buyer]) => {
               it('The state is Closed', async () => {
                 assert.equal(await getState(this), HATCH_STATE.CLOSED)
               })
+
+              it('Contribution token recoverability is possible', async () => {
+                assert.isTrue(await this.hatch.allowRecoverability(ZERO_ADDRESS));
+                assert.isTrue(await this.hatch.allowRecoverability(this.contributionToken.address));
+              });
             })
           })
         })
