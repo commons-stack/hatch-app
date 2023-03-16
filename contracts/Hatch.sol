@@ -281,7 +281,7 @@ contract Hatch is EtherTokenConstant, IsContract, AragonApp, IACLOracle {
     function _contribute(address _contributor, uint256 _value) internal {
         uint256 value = totalRaised.add(_value) > maxGoal ? maxGoal.sub(totalRaised) : _value;
         if (contributionToken == ETH && _value > value) {
-            msg.sender.transfer(_value.sub(value));
+            msg.sender.call.value(_value.sub(value));
         }
 
         // (contributor) ~~~> contribution tokens ~~~> (hatch)
@@ -362,7 +362,7 @@ contract Hatch is EtherTokenConstant, IsContract, AragonApp, IACLOracle {
         if (_token == ETH) {
             require(_from == address(this), ERROR_TOKEN_TRANSFER_REVERTED);
             require(_to != address(this),   ERROR_TOKEN_TRANSFER_REVERTED);
-            _to.transfer(_amount);
+            _to.call.value(_amount);
         } else {
             if (_from == address(this)) {
                 require(ERC20(_token).safeTransfer(_to, _amount), ERROR_TOKEN_TRANSFER_REVERTED);
