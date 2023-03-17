@@ -38,8 +38,6 @@ contract Hatch is EtherTokenConstant, IsContract, AragonApp, IACLOracle {
     string private constant ERROR_INVALID_PCT              = "HATCH_INVALID_PCT";
     string private constant ERROR_INVALID_STATE            = "HATCH_INVALID_STATE";
     string private constant ERROR_INVALID_CONTRIBUTE_VALUE = "HATCH_INVALID_CONTRIBUTE_VALUE";
-    string private constant ERROR_INSUFFICIENT_BALANCE     = "HATCH_INSUFFICIENT_BALANCE";
-    string private constant ERROR_INSUFFICIENT_ALLOWANCE   = "HATCH_INSUFFICIENT_ALLOWANCE";
     string private constant ERROR_NOTHING_TO_REFUND        = "HATCH_NOTHING_TO_REFUND";
     string private constant ERROR_TOKEN_TRANSFER_REVERTED  = "HATCH_TOKEN_TRANSFER_REVERTED";
 
@@ -291,8 +289,6 @@ contract Hatch is EtherTokenConstant, IsContract, AragonApp, IACLOracle {
 
         // (contributor) ~~~> contribution tokens ~~~> (hatch)
         if (contributionToken != ETH) {
-            require(ERC20(contributionToken).balanceOf(_contributor) >= value,                ERROR_INSUFFICIENT_BALANCE);
-            require(ERC20(contributionToken).allowance(_contributor, address(this)) >= value, ERROR_INSUFFICIENT_ALLOWANCE);
             _transfer(contributionToken, _contributor, address(this), value);
         }
         // (mint ✨) ~~~> project tokens ~~~> (contributor)
