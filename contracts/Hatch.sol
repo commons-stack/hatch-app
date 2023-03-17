@@ -206,10 +206,6 @@ contract Hatch is EtherTokenConstant, IsContract, AragonApp, IACLOracle {
         return _value.mul(exchangeRate).div(PPM);
     }
 
-    function contributionToken() public view isInitialized returns (address) {
-        return contributionToken;
-    }
-
     /**
      * @notice Returns the current state of that hatch
     */
