@@ -59,13 +59,14 @@ contract Hatch is EtherTokenConstant, IsContract, AragonApp, IACLOracle {
 
     uint256                                         public minGoal;
     uint256                                         public maxGoal;
-    uint64                                          public period;
     uint256                                         public exchangeRate;
-    uint64                                          public vestingCliffPeriod;
-    uint64                                          public vestingCompletePeriod;
     uint256                                         public supplyOfferedPct;
     uint256                                         public fundingForBeneficiaryPct;
+
     uint64                                          public openDate;
+    uint64                                          public period;
+    uint64                                          public vestingCliffPeriod;
+    uint64                                          public vestingCompletePeriod;
 
     bool                                            public isClosed;
     uint64                                          public vestingCliffDate;
