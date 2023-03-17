@@ -59,7 +59,7 @@ contract('Hatch, states validation', ([anyone, appManager, buyer]) => {
 
             describe('When the funding period elapses without having reached the funding goal', () => {
               before(async () => {
-                this.hatch.mockSetTimestamp(startDate + HATCH_PERIOD)
+                this.hatch.mockSetTimestamp(startDate + HATCH_PERIOD + 1)
               })
 
               it('The state is Refunding', async () => {
@@ -80,7 +80,7 @@ contract('Hatch, states validation', ([anyone, appManager, buyer]) => {
 
             describe('When the funding period elapses having reached the min funding goal', () => {
               before(async () => {
-                this.hatch.mockSetTimestamp(startDate + HATCH_PERIOD)
+                this.hatch.mockSetTimestamp(startDate + HATCH_PERIOD + 1)
               })
 
               it('The state is GoalReached', async () => {
@@ -101,7 +101,7 @@ contract('Hatch, states validation', ([anyone, appManager, buyer]) => {
 
             describe('When the funding period elapses having reached the max funding goal', () => {
               before(async () => {
-                this.hatch.mockSetTimestamp(startDate + HATCH_PERIOD)
+                this.hatch.mockSetTimestamp(startDate + HATCH_PERIOD + 1)
               })
   
               it('The state is still GoalReached', async () => {

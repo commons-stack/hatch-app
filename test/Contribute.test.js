@@ -142,7 +142,7 @@ contract('Hatch, contribute() functionality', ([anyone, appManager, buyer1, buye
 
         describe('When the sale is Refunding', () => {
           before(async () => {
-            this.hatch.mockSetTimestamp(startDate + HATCH_PERIOD)
+            this.hatch.mockSetTimestamp(startDate + HATCH_PERIOD + 1)
           })
 
           it('Sale state is Refunding', async () => {

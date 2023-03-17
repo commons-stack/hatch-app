@@ -226,7 +226,7 @@ contract Hatch is EtherTokenConstant, IsContract, AragonApp, IACLOracle {
             }
         }
 
-        if (_timeSinceOpen() < period) {
+        if (_timeSinceOpen() <= period) {
             return State.Funding;
         } else if (totalRaised >= minGoal) {
             if (isClosed) {

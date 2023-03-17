@@ -39,7 +39,7 @@ contract('Hatch, refund() functionality', ([anyone, appManager, buyer1, buyer2, 
         await this.hatch.contribute(1, { from: buyer5 }) // Spends a miserable amount xD
         await this.hatch.contribute(1, { from: buyer5 }) // And again
 
-        this.hatch.mockSetTimestamp(startDate + HATCH_PERIOD)
+        this.hatch.mockSetTimestamp(startDate + HATCH_PERIOD + 1)
       })
 
       it('Sale state is Refunding', async () => {
@@ -128,7 +128,7 @@ contract('Hatch, refund() functionality', ([anyone, appManager, buyer1, buyer2, 
 
       describe('When min goal is reached and period has ended', async () => {
         before(async () => {
-          this.hatch.mockSetTimestamp(startDate + HATCH_PERIOD)
+          this.hatch.mockSetTimestamp(startDate + HATCH_PERIOD + 1)
         })
   
         it('Sale state is GoalReached', async () => {
