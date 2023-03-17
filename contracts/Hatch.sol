@@ -236,7 +236,7 @@ contract Hatch is EtherTokenConstant, IsContract, AragonApp, IACLOracle {
         }
     }
 
-    function balanceOf(address _who) public view isInitialized returns (uint256) {
+    function balanceOfInContributionToken(address _who) public view isInitialized returns (uint256) {
         return contributionToken == ETH ? _who.balance : ERC20(contributionToken).staticBalanceOf(_who);
     }
 
