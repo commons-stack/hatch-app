@@ -26,8 +26,8 @@ module.exports = {
     ],
   },
   aragon: {
-    appEnsName: 'augmented-bonding-curve.open.aragonpm.eth',
-    appContractName: 'AugmentedBondingCurve',
+    appEnsName: 'hatch.open.aragonpm.eth',
+    appContractName: 'Hatch',
     appRoles: [
       {
         "name": "Open hatch",
@@ -73,12 +73,7 @@ module.exports = {
     mainnet: {
       url: node_url('mainnet'),
       accounts: accounts('mainnet'),
-      appEnsName: 'augmented-bonding-curve.aragonpm.eth',
-    },
-    rinkeby: {
-      url: node_url('rinkeby'),
-      accounts: accounts('rinkeby'),
-      ensRegistry: '0x98Df287B6C145399Aaa709692c8D308357bC085D',
+      appEnsName: 'hatch.open.aragonpm.eth',
     },
     xdai: {
       url: node_url('xdai'),

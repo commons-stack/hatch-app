@@ -195,6 +195,13 @@ contract Hatch is EtherTokenConstant, IsContract, AragonApp, IACLOracle {
         _close();
     }
 
+    /**
+     * @dev Can perform only when the token vesting has finished
+     */
+    function canPerform(address, address, bytes32, uint256[]) external view isInitialized returns (bool) {
+        return vestingCompleteDate != 0 && getTimestamp64() >= vestingCompleteDate;
+    }
+
     /***** public view functions *****/
 
     /**
@@ -237,14 +244,6 @@ contract Hatch is EtherTokenConstant, IsContract, AragonApp, IACLOracle {
     function balanceOfInContributionToken(address _who) public view isInitialized returns (uint256) {
         return contributionToken == ETH ? _who.balance : ERC20(contributionToken).staticBalanceOf(_who);
     }
-
-    /**
-     * @dev Can perform only when the token vesting has finished
-     */
-    function canPerform(address, address, bytes32, uint256[]) external view isInitialized returns (bool) {
-        return vestingCompleteDate != 0 && getTimestamp64() >= vestingCompleteDate;
-    }
-
 
     /**
      * @dev Fund recovery should be disabled for the contribution token until the hatch is closed
