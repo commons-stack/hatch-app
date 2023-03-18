@@ -1,4 +1,4 @@
-const { VESTING_CLIFF_PERIOD, VESTING_COMPLETE_PERIOD, ZERO_ADDRESS } = require('./helpers/constants')
+const { VESTING_CLIFF_PERIOD, VESTING_COMPLETE_PERIOD, ZERO_ADDRESS, HATCH_PERIOD } = require('./helpers/constants')
 const { prepareDefaultSetup, defaultDeployParams, initializeHatch } = require('./common/deploy')
 const { contributionToProjectTokens, now } = require('./common/utils')
 const { assertBn } = require('@1hive/contract-helpers-test/src/asserts')
@@ -59,14 +59,13 @@ contract('Hatch, vesting functionality', ([anyone, appManager, buyer]) => {
       })
 
       describe('ACL Oracle', () => {
-        it('Can not perform before vesting is complete', async () => {
-          assertBn(await this.hatch.vestingCompleteDate(), bn(startDate + VESTING_COMPLETE_PERIOD))
-          await this.hatch.mockSetTimestamp((await this.hatch.vestingCompleteDate()).sub(bn(1)))
+        it('Can not perform before hatch period is complete', async () => {
+          await this.hatch.mockSetTimestamp(startDate + HATCH_PERIOD)
           assert.isFalse(await this.hatch.canPerform(ZERO_ADDRESS, ZERO_ADDRESS, '0x', []))
         })
 
-        it('Can perform after vesting is complete', async () => {
-          await this.hatch.mockSetTimestamp(await this.hatch.vestingCompleteDate())
+        it('Can perform after hatch period is complete', async () => {
+          await this.hatch.mockSetTimestamp(startDate + HATCH_PERIOD + 1)
           assert.isTrue(await this.hatch.canPerform(ZERO_ADDRESS, ZERO_ADDRESS, '0x', []))
         })
       })

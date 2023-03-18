@@ -196,10 +196,10 @@ contract Hatch is EtherTokenConstant, IsContract, AragonApp, IACLOracle {
     }
 
     /**
-     * @dev Can perform only when the token vesting has finished
+     * @dev Can perform only when the hatch period has finished
      */
     function canPerform(address, address, bytes32, uint256[]) external view isInitialized returns (bool) {
-        return vestingCompleteDate != 0 && getTimestamp64() >= vestingCompleteDate;
+        return openDate != 0 && _timeSinceOpen() > period;
     }
 
     /***** public view functions *****/
