@@ -34,11 +34,6 @@
         "Contributor",
         "Amount"
       ]
-    },
-    {
-      "name": "Close the hatch",
-      "id": "CLOSE_ROLE",
-      "params": []
     }
   ],
   "path": "contracts/Hatch.sol"

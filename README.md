@@ -34,7 +34,6 @@ The Hatch app is initialized with the following parameters:
 The Hatch app implements the following roles:
 
 * **OPEN_ROLE**: Determines who can open the hatch.
-* **CLOSE_ROLE**: Determines who can close the hatch.
 * **CONTRIBUTE_ROLE**: Determines who can contribute to the hatch.
 
 The Hatch app should have the following roles:
@@ -72,8 +71,7 @@ We recommend using [Frame](https://frame.sh/) to execute the command by adding t
 You can install the Hatch app by using the following console command:
 
 ```
-install/marketplace-hatch/(...initParams)/OPEN_ROLE:<manager-address>:<grantee-address>,CLOSE_ROLE:<manager-address>:<grantee-address>,
-CONTRIBUTE_ROLE:<manager-address>:<grantee-address>
+install/marketplace-hatch/(...initParams)/OPEN_ROLE:<manager-address>:<grantee-address>,CONTRIBUTE_ROLE:<manager-address>:<grantee-address>
 ```
 
 The `initParams` are set by separating them with a comma.

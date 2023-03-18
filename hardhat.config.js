@@ -41,11 +41,6 @@ module.exports = {
           "Contributor",
           "Amount"
         ]
-      },
-      {
-        "name": "Close the hatch",
-        "id": "CLOSE_ROLE",
-        "params": []
       }
     ],
     appBuildOutputPath: 'public/',

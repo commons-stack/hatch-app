@@ -108,12 +108,10 @@ const deploy = {
     ))
     test.HATCH_OPEN_ROLE = await appBase.OPEN_ROLE()
     test.HATCH_CONTRIBUTE_ROLE = await appBase.CONTRIBUTE_ROLE()
-    test.HATCH_CLOSE_ROLE = await appBase.CLOSE_ROLE()
   },
   setHatchPermissions: async (test, appManager) => {
     await test.acl.createPermission(appManager, test.hatch.address, test.HATCH_OPEN_ROLE, appManager, { from: appManager })
     await test.acl.createPermission(ANY_ADDRESS, test.hatch.address, test.HATCH_CONTRIBUTE_ROLE, appManager, { from: appManager })
-    await test.acl.createPermission(ANY_ADDRESS, test.hatch.address, test.HATCH_CLOSE_ROLE, appManager, { from: appManager })
   },
   initializeHatch: async (test, params) => {
     const paramsArr = [
