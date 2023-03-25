@@ -61,19 +61,15 @@ contract Hatch is EtherTokenConstant, IsContract, AragonApp, IACLOracle {
 
     uint64                                          public openDate;
     uint64                                          public period;
-    uint64                                          public vestingCliffPeriod;
-    uint64                                          public vestingCompletePeriod;
 
     bool                                            public isClosed;
-    uint64                                          public vestingCliffDate;
-    uint64                                          public vestingCompleteDate;
     uint256                                         public totalRaised;
-    mapping(address => mapping(uint256 => uint256)) public contributions; // contributor => (vestedPurchaseId => tokensSpent)
+    mapping(address => uint256)                     public contributions; // contributor => tokensSpent
 
     event SetOpenDate (uint64 date);
     event Close       ();
-    event Contribute  (address indexed contributor, uint256 value, uint256 amount, uint256 vestedPurchaseId);
-    event Refund      (address indexed contributor, uint256 value, uint256 amount, uint256 vestedPurchaseId);
+    event Contribute  (address indexed contributor, uint256 value, uint256 amount);
+    event Refund      (address indexed contributor, uint256 value, uint256 amount);
 
 
     /***** external function *****/
@@ -88,8 +84,6 @@ contract Hatch is EtherTokenConstant, IsContract, AragonApp, IACLOracle {
      * @param _maxGoal                  The max goal to be reached by the end of that hatch [in contribution token wei]
      * @param _period                   The period within which to accept contribution for that hatch
      * @param _exchangeRate             The exchangeRate [= 1/price] at which [bonded] tokens are to be purchased for that hatch [in PPM]
-     * @param _vestingCliffPeriod       The period during which purchased [bonded] tokens are to be cliffed
-     * @param _vestingCompletePeriod    The complete period during which purchased [bonded] tokens are to be vested
      * @param _supplyOfferedPct         The percentage of the initial supply of [bonded] tokens to be offered during that hatch [in PPM]
      * @param _fundingForBeneficiaryPct The percentage of the raised contribution tokens to be sent to the beneficiary [instead of the fundraising reserve] when that hatch is closed [in PPM]
      * @param _openDate                 The date upon which that hatch is to be open [ignored if 0]
@@ -103,8 +97,6 @@ contract Hatch is EtherTokenConstant, IsContract, AragonApp, IACLOracle {
         uint256                      _maxGoal,
         uint64                       _period,
         uint256                      _exchangeRate,
-        uint64                       _vestingCliffPeriod,
-        uint64                       _vestingCompletePeriod,
         uint256                      _supplyOfferedPct,
         uint256                      _fundingForBeneficiaryPct,
         uint64                       _openDate
@@ -120,8 +112,6 @@ contract Hatch is EtherTokenConstant, IsContract, AragonApp, IACLOracle {
         require(_maxGoal >= _minGoal,                                               ERROR_INVALID_MAX_GOAL);
         require(_period > 0,                                                        ERROR_INVALID_TIME_PERIOD);
         require(_exchangeRate > 0,                                                  ERROR_INVALID_EXCHANGE_RATE);
-        require(_vestingCliffPeriod > _period,                                      ERROR_INVALID_TIME_PERIOD);
-        require(_vestingCompletePeriod > _vestingCliffPeriod,                       ERROR_INVALID_TIME_PERIOD);
         require(_supplyOfferedPct > 0 && _supplyOfferedPct <= PPM,                  ERROR_INVALID_PCT);
         require(_fundingForBeneficiaryPct >= 0 && _fundingForBeneficiaryPct <= PPM, ERROR_INVALID_PCT);
 
@@ -136,8 +126,6 @@ contract Hatch is EtherTokenConstant, IsContract, AragonApp, IACLOracle {
         maxGoal = _maxGoal;
         period = _period;
         exchangeRate = _exchangeRate;
-        vestingCliffPeriod = _vestingCliffPeriod;
-        vestingCompletePeriod = _vestingCompletePeriod;
         supplyOfferedPct = _supplyOfferedPct;
         fundingForBeneficiaryPct = _fundingForBeneficiaryPct;
 
@@ -174,14 +162,13 @@ contract Hatch is EtherTokenConstant, IsContract, AragonApp, IACLOracle {
     }
 
     /**
-     * @notice Refund `_contributor`'s hatch contribution #`_vestedPurchaseId`
+     * @notice Refund `_contributor`'s hatch contribution
      * @param _contributor      The address of the contributor whose hatch contribution is to be refunded
-     * @param _vestedPurchaseId The id of the contribution to be refunded
     */
-    function refund(address _contributor, uint256 _vestedPurchaseId) external nonReentrant isInitialized {
+    function refund(address _contributor) external nonReentrant isInitialized {
         require(state() == State.Refunding, ERROR_INVALID_STATE);
 
-        _refund(_contributor, _vestedPurchaseId);
+        _refund(_contributor);
     }
 
     /**
@@ -264,14 +251,8 @@ contract Hatch is EtherTokenConstant, IsContract, AragonApp, IACLOracle {
         require(_date >= getTimestamp64(), ERROR_INVALID_TIME_PERIOD);
 
         openDate = _date;
-        _setVestingDatesWhenOpenDateIsKnown();
 
         emit SetOpenDate(_date);
-    }
-
-    function _setVestingDatesWhenOpenDateIsKnown() internal {
-        vestingCliffDate = openDate.add(vestingCliffPeriod);
-        vestingCompleteDate = openDate.add(vestingCompletePeriod);
     }
 
     function _open() internal {
@@ -284,74 +265,45 @@ contract Hatch is EtherTokenConstant, IsContract, AragonApp, IACLOracle {
             msg.sender.call.value(_value.sub(value));
         }
 
-        // (contributor) ~~~> contribution tokens ~~~> (hatch)
         if (contributionToken != ETH) {
             _transfer(contributionToken, _contributor, address(this), value);
         }
-        // (mint ✨) ~~~> project tokens ~~~> (contributor)
-        uint256 tokensToSell = contributionToTokens(value);
-        tokenManager.issue(tokensToSell);
-        uint256 vestedPurchaseId = tokenManager.assignVested(
-            _contributor,
-            tokensToSell,
-            openDate,
-            vestingCliffDate,
-            vestingCompleteDate,
-            true /* revokable */
-        );
-        totalRaised = totalRaised.add(value);
-        // register contribution tokens spent in this purchase for a possible upcoming refund
-        contributions[_contributor][vestedPurchaseId] = value;
 
-        emit Contribute(_contributor, value, tokensToSell, vestedPurchaseId);
+        uint256 tokensToSell = contributionToTokens(value);
+        tokenManager.mint(_contributor, tokensToSell);
+
+        totalRaised = totalRaised.add(value);
+        contributions[_contributor] = contributions[_contributor].add(value);
+
+        emit Contribute(_contributor, value, tokensToSell);
     }
 
-    function _refund(address _contributor, uint256 _vestedPurchaseId) internal {
-        // recall how much contribution tokens are to be refund for this purchase
-        uint256 tokensToRefund = contributions[_contributor][_vestedPurchaseId];
+    function _refund(address _contributor) internal {
+        uint256 tokensToRefund = contributions[_contributor];
         require(tokensToRefund > 0, ERROR_NOTHING_TO_REFUND);
-        contributions[_contributor][_vestedPurchaseId] = 0;
-        // (hatch) ~~~> contribution tokens ~~~> (contributor)
-        _transfer(contributionToken, address(this), _contributor, tokensToRefund);
-        /**
-         * NOTE
-         * the following lines assume that _contributor has not transfered any of its vested tokens
-         * for now TokenManager does not handle switching the transferrable status of its underlying token
-         * there is thus no way to enforce non-transferrability during the hatch phase only
-         * this will be updated in a later version
-        */
-        // (contributor) ~~~> project tokens ~~~> (token manager)
-        (uint256 tokensSold,,,,) = tokenManager.getVesting(_contributor, _vestedPurchaseId);
-        tokenManager.revokeVesting(_contributor, _vestedPurchaseId);
-        // (token manager) ~~~> project tokens ~~~> (burn 💥)
-        tokenManager.burn(address(tokenManager), tokensSold);
+        contributions[_contributor] = 0;
 
-        emit Refund(_contributor, tokensToRefund, tokensSold, _vestedPurchaseId);
+        _transfer(contributionToken, address(this), _contributor, tokensToRefund);
+
+        uint256 tokensSold = contributionToTokens(tokensToRefund);
+        tokenManager.burn(_contributor, tokensSold);
+
+        emit Refund(_contributor, tokensToRefund, tokensSold);
     }
 
     function _close() internal {
         isClosed = true;
 
-        // (hatch) ~~~> contribution tokens ~~~> (beneficiary)
         uint256 fundsForBeneficiary = totalRaised.mul(fundingForBeneficiaryPct).div(PPM);
         if (fundsForBeneficiary > 0) {
             _transfer(contributionToken, address(this), beneficiary, fundsForBeneficiary);
         }
-        // (hatch) ~~~> contribution tokens ~~~> (reserve)
-        uint256 tokensForReserve = contributionToken == ETH ? address(this).balance : ERC20(contributionToken).balanceOf(address(this));
 
+        uint256 tokensForReserve = contributionToken == ETH ? address(this).balance : ERC20(contributionToken).balanceOf(address(this));
         _transfer(contributionToken, address(this), reserve, tokensForReserve);
-        // (mint ✨) ~~~> project tokens ~~~> (beneficiary)
+
         uint256 tokensForBeneficiary = token.totalSupply().mul(PPM.sub(supplyOfferedPct)).div(supplyOfferedPct);
-        tokenManager.issue(tokensForBeneficiary);
-        tokenManager.assignVested(
-            beneficiary,
-            tokensForBeneficiary,
-            openDate,
-            vestingCliffDate,
-            vestingCompleteDate,
-            false /* revokable */
-        );
+        tokenManager.mint(beneficiary, tokensForBeneficiary);
 
         emit Close();
     }

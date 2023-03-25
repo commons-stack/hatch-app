@@ -15,8 +15,6 @@ const {
   HATCH_MIN_GOAL,
   HATCH_PERIOD,
   HATCH_EXCHANGE_RATE,
-  VESTING_CLIFF_PERIOD,
-  VESTING_COMPLETE_PERIOD,
   PERCENT_SUPPLY_OFFERED,
   PERCENT_FUNDING_FOR_BENEFICIARY,
 } = require('../helpers/constants')
@@ -80,17 +78,11 @@ const deploy = {
       appManager
     ))
     test.TOKEN_MANAGER_MINT_ROLE = await appBase.MINT_ROLE()
-    test.TOKEN_MANAGER_ISSUE_ROLE = await appBase.ISSUE_ROLE()
-    test.TOKEN_MANAGER_ASSIGN_ROLE = await appBase.ASSIGN_ROLE()
-    test.TOKEN_MANAGER_REVOKE_VESTINGS_ROLE = await appBase.REVOKE_VESTINGS_ROLE()
     test.TOKEN_MANAGER_BURN_ROLE = await appBase.BURN_ROLE()
   },
   setTokenManagerPermissions: async (test, appManager) => {
     await test.acl.createPermission(ANY_ADDRESS, test.tokenManager.address, test.TOKEN_MANAGER_MINT_ROLE, appManager, { from: appManager })
     await test.acl.createPermission(ANY_ADDRESS, test.tokenManager.address, test.TOKEN_MANAGER_BURN_ROLE, appManager, { from: appManager })
-    await test.acl.createPermission(ANY_ADDRESS, test.tokenManager.address, test.TOKEN_MANAGER_REVOKE_VESTINGS_ROLE, appManager, { from: appManager })
-    await test.acl.createPermission(ANY_ADDRESS, test.tokenManager.address, test.TOKEN_MANAGER_ISSUE_ROLE, appManager, { from: appManager })
-    await test.acl.createPermission(ANY_ADDRESS, test.tokenManager.address, test.TOKEN_MANAGER_ASSIGN_ROLE, appManager, { from: appManager })
   },
   initializeTokenManager: async test => {
     await test.projectToken.changeController(test.tokenManager.address)
@@ -123,8 +115,6 @@ const deploy = {
       params.hatchMaxGoal,
       params.hatchPeriod,
       params.hatchExchangeRate,
-      params.vestingCliffPeriod,
-      params.vestingCompletePeriod,
       params.percentSupplyOffered,
       params.percentFundingForBeneficiary,
       params.startDate,
@@ -136,8 +126,6 @@ const deploy = {
     return {
       contributionToken: test.contributionToken.address,
       tokenManager: test.tokenManager.address,
-      vestingCliffPeriod: VESTING_CLIFF_PERIOD,
-      vestingCompletePeriod: VESTING_COMPLETE_PERIOD,
       hatchMaxGoal: HATCH_MAX_GOAL,
       hatchMinGoal: HATCH_MIN_GOAL,
       hatchExchangeRate: HATCH_EXCHANGE_RATE,

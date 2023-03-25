@@ -23,8 +23,6 @@ The Hatch app is initialized with the following parameters:
 * `uint256 _maxGoal` is the goal that closes the hatch  when it is reached even if the hatch period has not ended (in contribution token wei).
 * `uint64 _period` is the period within which to accept contribution for that hatch.
 * `uint256 _exchangeRate` is the exchange rate at which bonded tokens are to be purchased for that hatch (in PPM).
-* `uint64 _vestingCliffPeriod` is the period during which purchased bonded tokens are to be cliffed.
-* `uint64 _vestingCompletePeriod` is the complete period during which purchased bonded tokens are to be vested.
 * `uint256 _supplyOfferedPct` is the percentage of the initial supply of bonded tokens to be offered during that hatch (in PPM).
 * `uint256 _fundingForBeneficiaryPct` is the percentage of the raised contribution tokens to be sent to the beneficiary (instead of the fundraising reserve) when that hatch is closed (in PPM).
 * `uint64 _openDate` is the date upon which the hatch is to be open (ignored if 0).
@@ -38,7 +36,7 @@ The Hatch app implements the following roles:
 
 The Hatch app should have the following roles:
 
-* **MINT_ROLE**, **BURN_ROLE**, **ISSUE_ROLE**, **ASSIGN_ROLE**, and **REVOKE_VESTING_ROLE**: It should be able to mint, burn, issue, and assign hatch tokens in Token Manager, in addition to revoke their vestings.
+* **MINT_ROLE**, **BURN_ROLE**: It should be able to mint and burn hatch tokens in Token Manager.
 
 ## Interface
 

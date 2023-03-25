@@ -2,8 +2,6 @@ const {
   HATCH_MAX_GOAL,
   HATCH_MIN_GOAL,
   PERCENT_SUPPLY_OFFERED,
-  VESTING_CLIFF_PERIOD,
-  VESTING_COMPLETE_PERIOD,
   HATCH_STATE,
   HATCH_PERIOD,
   ZERO_ADDRESS,
@@ -48,8 +46,6 @@ contract('Hatch, setup', ([anyone, appManager, someEOA]) => {
       })
 
       it('Dates and time periods are set', async () => {
-        assert.equal((await this.hatch.vestingCliffPeriod()).toNumber(), VESTING_CLIFF_PERIOD)
-        assert.equal((await this.hatch.vestingCompletePeriod()).toNumber(), VESTING_COMPLETE_PERIOD)
         assert.equal((await this.hatch.period()).toNumber(), HATCH_PERIOD)
       })
 
@@ -115,11 +111,6 @@ contract('Hatch, setup', ([anyone, appManager, someEOA]) => {
     it('Reverts when setting invalid dates', async () => {
       await assertRevert(initializeHatch(this, { ...defaultParams, startDate: Math.floor(new Date().getTime() / 1000) - 1 }), 'HATCH_INVALID_TIME_PERIOD')
       await assertRevert(initializeHatch(this, { ...defaultParams, hatchPeriod: 0 }), 'HATCH_INVALID_TIME_PERIOD')
-      await assertRevert(initializeHatch(this, { ...defaultParams, vestingCliffPeriod: defaultParams.hatchPeriod - 1 }), 'HATCH_INVALID_TIME_PERIOD')
-      await assertRevert(
-        initializeHatch(this, { ...defaultParams, vestingCompletePeriod: defaultParams.vestingCliffPeriod - 1 }),
-        'HATCH_INVALID_TIME_PERIOD'
-      )
     })
     
     it('Reverts when setting an invalid min funding goal', async () => {

@@ -92,7 +92,7 @@ contract('Hatch, contribute() functionality', ([anyone, appManager, buyer1, buye
           assertBn(appBalance, contributionAmount)
         })
 
-        it('Vested tokens are assigned to the buyer', async () => {
+        it('Tokens are minted to the buyer', async () => {
           const userBalance = await this.projectToken.balanceOf(buyer1)
           const expectedAmount = contributionToProjectTokens(contributionAmount)
           assertBn(userBalance, expectedAmount)
@@ -105,15 +105,12 @@ contract('Hatch, contribute() functionality', ([anyone, appManager, buyer1, buye
           assert.equal(event.args.contributor, buyer1)
           assertBn(bn(event.args.value), contributionAmount)
           assertBn(bn(event.args.amount), expectedAmount)
-          assert.equal(event.args.vestedPurchaseId.toNumber(), 0)
         })
 
-        it('The purchase produces a valid purchase id for the buyer', async () => {
+        it('A buyer con contribute many times', async () => {
           await contribute(buyer2, 1, useETH)
           await contribute(buyer2, 2, useETH)
-          const tx = await contribute(buyer2, 3, useETH)
-          const event = getEvent(tx, 'Contribute')
-          assert.equal(event.args.vestedPurchaseId.toNumber(), 2)
+          await contribute(buyer2, 3, useETH)
         })
 
         it('Keeps track of total tokens raised', async () => {
@@ -121,11 +118,9 @@ contract('Hatch, contribute() functionality', ([anyone, appManager, buyer1, buye
           assertBn(raised, contributionAmount.add(bn(6)))
         })
 
-        it('Keeps track of independent purchases', async () => {
-          assertBn(await this.hatch.contributions(buyer1, 0), contributionAmount)
-          assert.equal((await this.hatch.contributions(buyer2, 0)).toNumber(), 1)
-          assert.equal((await this.hatch.contributions(buyer2, 1)).toNumber(), 2)
-          assert.equal((await this.hatch.contributions(buyer2, 2)).toNumber(), 3)
+        it('Keeps track of independent contributors', async () => {
+          assertBn(await this.hatch.contributions(buyer1), contributionAmount)
+          assert.equal((await this.hatch.contributions(buyer2)).toNumber(), 6)
         })
 
         if (!useETH) {
