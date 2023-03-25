@@ -21,6 +21,10 @@ contract('Hatch, states validation', ([anyone, appManager, buyer]) => {
         assert.equal(await getState(this), HATCH_STATE.PENDING)
       })
 
+      it('ACL oracle canPerform() returns false', async () => {
+        assert.isFalse(await this.hatch.canPerform(ZERO_ADDRESS, ZERO_ADDRESS, '0x', []))
+      })
+
       describe('When the sale is started', () => {
         before(async () => {
           if (startDate == 0) {
@@ -38,6 +42,10 @@ contract('Hatch, states validation', ([anyone, appManager, buyer]) => {
           assert.isTrue(await this.hatch.allowRecoverability(ZERO_ADDRESS));
           assert.isFalse(await this.hatch.allowRecoverability(this.contributionToken.address));
         });
+
+        it('ACL oracle canPerform() returns false', async () => {
+          assert.isFalse(await this.hatch.canPerform(ZERO_ADDRESS, ZERO_ADDRESS, '0x', []))
+        })
 
         describe('When the funding period is still running', () => {
           before(async () => {
@@ -64,6 +72,10 @@ contract('Hatch, states validation', ([anyone, appManager, buyer]) => {
 
               it('The state is Refunding', async () => {
                 assert.equal(await getState(this), HATCH_STATE.REFUNDING)
+              })
+
+              it('ACL oracle canPerform() returns true', async () => {
+                assert.isTrue(await this.hatch.canPerform(ZERO_ADDRESS, ZERO_ADDRESS, '0x', []))
               })
             })
           })
@@ -116,6 +128,10 @@ contract('Hatch, states validation', ([anyone, appManager, buyer]) => {
 
               it('The state is Closed', async () => {
                 assert.equal(await getState(this), HATCH_STATE.CLOSED)
+              })
+
+              it('ACL oracle canPerform() returns true', async () => {
+                assert.isTrue(await this.hatch.canPerform(ZERO_ADDRESS, ZERO_ADDRESS, '0x', []))
               })
 
               it('Contribution token recoverability is possible', async () => {

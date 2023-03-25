@@ -181,10 +181,10 @@ contract Hatch is EtherTokenConstant, IsContract, AragonApp, IACLOracle {
     }
 
     /**
-     * @dev Can perform only when the hatch period has finished
+     * @dev Can perform only when the hatch period has finished or when the hatch is closed
      */
     function canPerform(address, address, bytes32, uint256[]) external view isInitialized returns (bool) {
-        return openDate != 0 && _timeSinceOpen() > period;
+        return openDate != 0 && getTimestamp64() > openDate.add(period) || isClosed;
     }
 
     /***** public view functions *****/
