@@ -8,7 +8,7 @@ const getState = async test => {
 
 contract('Hatch, states validation', ([anyone, appManager, buyer]) => {
   const itManagesStateCorrectly = startDate => {
-    describe('When a sale is deployed', () => {
+    describe('When a hatch is deployed', () => {
       before(async () => {
         await prepareDefaultSetup(this, appManager)
         await initializeHatch(this, { ...defaultDeployParams(this, appManager), startDate })
@@ -25,7 +25,7 @@ contract('Hatch, states validation', ([anyone, appManager, buyer]) => {
         assert.isFalse(await this.hatch.canPerform(ZERO_ADDRESS, ZERO_ADDRESS, '0x', []))
       })
 
-      describe('When the sale is started', () => {
+      describe('When the hatch is started', () => {
         before(async () => {
           if (startDate == 0) {
             startDate = now()
@@ -56,7 +56,7 @@ contract('Hatch, states validation', ([anyone, appManager, buyer]) => {
             assert.equal(await getState(this), HATCH_STATE.FUNDING)
           })
 
-          describe('When purchases are made, not reaching the min funding goal', () => {
+          describe('When contributions are made, not reaching the min funding goal', () => {
             before(async () => {
               await this.hatch.contribute(HATCH_MIN_GOAL / 2, { from: buyer })
             })
@@ -80,7 +80,7 @@ contract('Hatch, states validation', ([anyone, appManager, buyer]) => {
             })
           })
 
-          describe('When purchases are made, reaching the min funding goal before the funding period elapsed', () => {
+          describe('When contributions are made, reaching the min funding goal before the funding period elapsed', () => {
             before(async () => {
               this.hatch.mockSetTimestamp(startDate + HATCH_PERIOD / 2)
               await this.hatch.contribute(HATCH_MIN_GOAL / 2, { from: buyer })
@@ -121,7 +121,7 @@ contract('Hatch, states validation', ([anyone, appManager, buyer]) => {
               })
             })
 
-            describe('When the sale owner closes the sale', () => {
+            describe('When the hatch is closed', () => {
               before(async () => {
                 await this.hatch.close()
               })

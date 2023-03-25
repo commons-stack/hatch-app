@@ -4,12 +4,12 @@ const { prepareDefaultSetup, defaultDeployParams, initializeHatch, deployDefault
 const { assertRevert, assertBn } = require('@1hive/contract-helpers-test/src/asserts')
 const { bn } = require('@1hive/contract-helpers-test/src/numbers')
 
-contract('Hatch, contribute() functionality', ([anyone, appManager, buyer1, buyer2]) => {
+contract('Hatch, contribute() functionality', ([anyone, appManager, contributor1, contributor2]) => {
   const initializeHatchWithERC20 = async startDate => {
-    await this.contributionToken.generateTokens(buyer1, bn('100e18'))
-    await this.contributionToken.generateTokens(buyer2, bn('100000e18'))
-    await this.contributionToken.approve(this.hatch.address, bn('100e18'), { from: buyer1 })
-    await this.contributionToken.approve(this.hatch.address, bn('100000e18'), { from: buyer2 })
+    await this.contributionToken.generateTokens(contributor1, bn('100e18'))
+    await this.contributionToken.generateTokens(contributor2, bn('100000e18'))
+    await this.contributionToken.approve(this.hatch.address, bn('100e18'), { from: contributor1 })
+    await this.contributionToken.approve(this.hatch.address, bn('100000e18'), { from: contributor2 })
 
     await initializeHatch(this, { ...defaultDeployParams(this, appManager), startDate })
   }
@@ -39,15 +39,15 @@ contract('Hatch, contribute() functionality', ([anyone, appManager, buyer1, buye
       }
     })
 
-    it('Reverts if the user attempts to buy tokens before the sale has started', async () => {
-      await assertRevert(contribute(buyer1, 1, useETH), 'HATCH_INVALID_STATE')
+    it('Reverts if the user attempts to buy tokens before the hatch has started', async () => {
+      await assertRevert(contribute(contributor1, 1, useETH), 'HATCH_INVALID_STATE')
     })
 
-    describe('When the sale has started', () => {
+    describe('When the hatch has started', () => {
       const contributionAmount = bn('100e18')
       const acceptableGasDiff = bn(web3.utils.toWei('0.01', 'ether'))
 
-      before('Open the sale if necessary, and set the date to the open date', async () => {
+      before('Open the hatch if necessary, and set the date to the open date', async () => {
         if (startDate == 0) {
           startDate = now()
           await this.hatch.open({ from: appManager })
@@ -66,13 +66,13 @@ contract('Hatch, contribute() functionality', ([anyone, appManager, buyer1, buye
       })
 
       describe('When a user buys project tokens', () => {
-        let purchaseTx
-        let buyer1_initialBalance
+        let contributionTx
+        let contributor1_initialBalance
 
         before('Record initial token balances and make a contribution', async () => {
-          buyer1_initialBalance = bn(await this.contributionToken.balanceOf(buyer1))
+          contributor1_initialBalance = bn(await this.contributionToken.balanceOf(contributor1))
 
-          purchaseTx = await contribute(buyer1, contributionAmount, useETH)
+          contributionTx = await contribute(contributor1, contributionAmount, useETH)
         })
 
         it('Mints the correct amount of project tokens', async () => {
@@ -82,8 +82,8 @@ contract('Hatch, contribute() functionality', ([anyone, appManager, buyer1, buye
         })
 
         it('Reduces user contribution token balance', async () => {
-          const userBalance = bn(await this.contributionToken.balanceOf(buyer1))
-          const expectedBalance = buyer1_initialBalance.sub(contributionAmount)
+          const userBalance = bn(await this.contributionToken.balanceOf(contributor1))
+          const expectedBalance = contributor1_initialBalance.sub(contributionAmount)
           assert.isTrue(userBalance.lt(expectedBalance.add(acceptableGasDiff)))
         })
 
@@ -92,25 +92,25 @@ contract('Hatch, contribute() functionality', ([anyone, appManager, buyer1, buye
           assertBn(appBalance, contributionAmount)
         })
 
-        it('Tokens are minted to the buyer', async () => {
-          const userBalance = await this.projectToken.balanceOf(buyer1)
+        it('Tokens are minted to the contributor', async () => {
+          const userBalance = await this.projectToken.balanceOf(contributor1)
           const expectedAmount = contributionToProjectTokens(contributionAmount)
           assertBn(userBalance, expectedAmount)
         })
 
         it('A Contribute event is emitted', async () => {
           const expectedAmount = contributionToProjectTokens(contributionAmount)
-          const event = getEvent(purchaseTx, 'Contribute')
+          const event = getEvent(contributionTx, 'Contribute')
           assert.isTrue(!!event)
-          assert.equal(event.args.contributor, buyer1)
+          assert.equal(event.args.contributor, contributor1)
           assertBn(bn(event.args.value), contributionAmount)
           assertBn(bn(event.args.amount), expectedAmount)
         })
 
-        it('A buyer con contribute many times', async () => {
-          await contribute(buyer2, 1, useETH)
-          await contribute(buyer2, 2, useETH)
-          await contribute(buyer2, 3, useETH)
+        it('A contributor can contribute many times', async () => {
+          await contribute(contributor2, 1, useETH)
+          await contribute(contributor2, 2, useETH)
+          await contribute(contributor2, 3, useETH)
         })
 
         it('Keeps track of total tokens raised', async () => {
@@ -119,13 +119,13 @@ contract('Hatch, contribute() functionality', ([anyone, appManager, buyer1, buye
         })
 
         it('Keeps track of independent contributors', async () => {
-          assertBn(await this.hatch.contributions(buyer1), contributionAmount)
-          assert.equal((await this.hatch.contributions(buyer2)).toNumber(), 6)
+          assertBn(await this.hatch.contributions(contributor1), contributionAmount)
+          assert.equal((await this.hatch.contributions(contributor2)).toNumber(), 6)
         })
 
         if (!useETH) {
           it("Reverts when sending ETH in a contribution that's supposed to use ERC20 tokens", async () => {
-            await assertRevert(contribute(buyer1, bn('10e18'), true), 'HATCH_INVALID_CONTRIBUTE_VALUE')
+            await assertRevert(contribute(contributor1, bn('10e18'), true), 'HATCH_INVALID_CONTRIBUTE_VALUE')
           })
         } else {
           it('Reverts if the ETH amount sent does not match the specified amount', async () => {
@@ -135,45 +135,45 @@ contract('Hatch, contribute() functionality', ([anyone, appManager, buyer1, buye
           })
         }
 
-        describe('When the sale is Refunding', () => {
+        describe('When the hatch is Refunding', () => {
           before(async () => {
             this.hatch.mockSetTimestamp(startDate + HATCH_PERIOD + 1)
           })
 
-          it('Sale state is Refunding', async () => {
+          it('Hatch state is Refunding', async () => {
             assert.equal((await this.hatch.state()).toNumber(), HATCH_STATE.REFUNDING)
           })
 
           it('Reverts if a user attempts to buy tokens', async () => {
-            await assertRevert(contribute(buyer2, 1, useETH), 'HATCH_INVALID_STATE')
+            await assertRevert(contribute(contributor2, 1, useETH), 'HATCH_INVALID_STATE')
           })
         })
 
-        describe('When the sale state is GoalReached', () => {
+        describe('When the hatch state is GoalReached', () => {
           before(async () => {
             this.hatch.mockSetTimestamp(startDate + HATCH_PERIOD / 2)
           })
 
-          it('A purchase cannot cause totalRaised to be greater than the hatchMaxGoal', async () => {
+          it('A contribution cannot cause totalRaised to be greater than the hatchMaxGoal', async () => {
             const raised = bn(await this.hatch.totalRaised())
             const remainingToFundingGoal = HATCH_MAX_GOAL.sub(raised)
-            const userBalanceBeforePurchase = bn(await this.contributionToken.balanceOf(buyer2))
+            const userBalanceBeforeContribution = bn(await this.contributionToken.balanceOf(contributor2))
 
             const amount = HATCH_MAX_GOAL * 2
-            await contribute(buyer2, amount, useETH)
-            const userBalanceAfterPurchase = bn(await this.contributionToken.balanceOf(buyer2))
+            await contribute(contributor2, amount, useETH)
+            const userBalanceAfterContribution = bn(await this.contributionToken.balanceOf(contributor2))
 
-            const tokensUsedInPurchase = userBalanceBeforePurchase.sub(userBalanceAfterPurchase)
+            const tokensUsedInContribution = userBalanceBeforeContribution.sub(userBalanceAfterContribution)
 
-            assert.isTrue(tokensUsedInPurchase.lt(remainingToFundingGoal.add(acceptableGasDiff)))
+            assert.isTrue(tokensUsedInContribution.lt(remainingToFundingGoal.add(acceptableGasDiff)))
           })
 
-          it('Sale state is GoalReached', async () => {
+          it('Hatch state is GoalReached', async () => {
             assert.equal((await this.hatch.state()).toNumber(), HATCH_STATE.GOAL_REACHED)
           })
 
           it('Reverts if a user attempts to buy tokens', async () => {
-            await assertRevert(contribute(buyer2, 1, useETH), 'HATCH_INVALID_STATE')
+            await assertRevert(contribute(contributor2, 1, useETH), 'HATCH_INVALID_STATE')
           })
         })
       })

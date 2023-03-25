@@ -5,7 +5,7 @@ The Hatch application allows organizations to set a minimum fundraising target t
 
 #### 🐲 Project Stage: Production
 
-The Hatch app is published to `marketplace-hatch.open.aragonpm.eth` on xDAI and Rinkeby networks. If you experience any issues or are interested in contributing please see review our [open issues](https://github.com/CommonsSwarm/hatch-app).
+The Hatch app is published to `hatch.open.aragonpm.eth` on xDAI network. If you experience any issues or are interested in contributing please see review our [open issues](https://github.com/CommonsSwarm/hatch-app).
 
 #### 🚨 Security Review Status: pre-audit
 
@@ -15,15 +15,15 @@ The code in this repository has not been audited.
 
 The Hatch app is initialized with the following parameters:
 
-* `TokenManager _tokenManager` is the address of the bonded token manager contract.
-* `address _reserve` the address of the reserve pool contract.
+* `TokenManager _tokenManager` is the address of the token manager that controls the governance token.
+* `address _reserve` the address of the vault or agent contract where the funds will be stored.
 * `address _beneficiary` is the address of the beneficiary to whom a percentage of the raised funds is be to be sent.
 * `address _contributionToken` is the address of the token to be used to contribute.
-* `uint256 _minGoal` is the min goal to be reached by the end of that hatch (in contribution token wei).
-* `uint256 _maxGoal` is the goal that closes the hatch  when it is reached even if the hatch period has not ended (in contribution token wei).
+* `uint256 _minGoal` is the min goal to be reached by the end of that hatch (in "contribution tokens" wei).
+* `uint256 _maxGoal` is the goal that closes the hatch  when it is reached even if the hatch period has not ended (in "contribution tokens" wei).
 * `uint64 _period` is the period within which to accept contribution for that hatch.
-* `uint256 _exchangeRate` is the exchange rate at which bonded tokens are to be purchased for that hatch (in PPM).
-* `uint256 _supplyOfferedPct` is the percentage of the initial supply of bonded tokens to be offered during that hatch (in PPM).
+* `uint256 _mintingRate` is the rate at which governance tokens will be minted in relation to contribution tokens (in PPM).
+* `uint256 _supplyOfferedPct` is the percentage of the initial supply of governance tokens to be offered during that hatch (in PPM).
 * `uint256 _fundingForBeneficiaryPct` is the percentage of the raised contribution tokens to be sent to the beneficiary (instead of the fundraising reserve) when that hatch is closed (in PPM).
 * `uint64 _openDate` is the date upon which the hatch is to be open (ignored if 0).
 

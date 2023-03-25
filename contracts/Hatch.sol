@@ -41,10 +41,10 @@ contract Hatch is EtherTokenConstant, IsContract, AragonApp, IACLOracle {
 
     enum State {
         Pending,     // hatch is idle and pending to be started
-        Funding,     // hatch has started and contributors can purchase tokens
+        Funding,     // hatch has started and contributors can mint governance tokens based on their contributions
         Refunding,   // hatch has not reached min goal within period and contributors can claim refunds
-        GoalReached, // hatch has reached min goal within period and trading is ready to be open
-        Closed       // hatch has reached min goal within period, has been closed and trading has been open
+        GoalReached, // hatch has reached min goal within period and it is ready to be closed
+        Closed       // hatch has reached min goal within period and has been closed
     }
 
     TokenManager                                    public tokenManager;
@@ -76,17 +76,17 @@ contract Hatch is EtherTokenConstant, IsContract, AragonApp, IACLOracle {
 
     /**
      * @notice Initialize hatch
-     * @param _tokenManager             The address of the [bonded] token manager contract
-     * @param _reserve                  The address of the reserve [pool] contract
-     * @param _beneficiary              The address of the beneficiary [to whom a percentage of the raised funds is be to be sent]
+     * @param _tokenManager             The address of the token manager that controls the governance token
+     * @param _reserve                  The address of the vault or agent contract where the funds will be stored
+     * @param _beneficiary              The address of the beneficiary to whom a percentage of the raised funds is be to be sent
      * @param _contributionToken        The address of the token to be used to contribute
-     * @param _minGoal                  The min goal to be reached by the end of that hatch [in contribution token wei]
-     * @param _maxGoal                  The max goal to be reached by the end of that hatch [in contribution token wei]
+     * @param _minGoal                  The min goal to be reached by the end of that hatch (in "contribution tokens" wei)
+     * @param _maxGoal                  The goal that closes the hatch  when it is reached even if the hatch period has not ended (in "contribution tokens" wei)
      * @param _period                   The period within which to accept contribution for that hatch
-     * @param _exchangeRate             The exchangeRate [= 1/price] at which [bonded] tokens are to be purchased for that hatch [in PPM]
-     * @param _supplyOfferedPct         The percentage of the initial supply of [bonded] tokens to be offered during that hatch [in PPM]
-     * @param _fundingForBeneficiaryPct The percentage of the raised contribution tokens to be sent to the beneficiary [instead of the fundraising reserve] when that hatch is closed [in PPM]
-     * @param _openDate                 The date upon which that hatch is to be open [ignored if 0]
+     * @param _exchangeRate             The rate at which governance tokens will be minted in relation to contribution tokens (in PPM)
+     * @param _supplyOfferedPct         The percentage of the initial supply of governance tokens to be offered during that hatch (in PPM)
+     * @param _fundingForBeneficiaryPct The percentage of the raised contribution tokens to be sent to the beneficiary (instead of the fundraising reserve) when that hatch is closed (in PPM)
+     * @param _openDate                 The date upon which that hatch is to be open (ignored if 0)
     */
     function initialize(
         TokenManager                 _tokenManager,
@@ -190,7 +190,7 @@ contract Hatch is EtherTokenConstant, IsContract, AragonApp, IACLOracle {
     /***** public view functions *****/
 
     /**
-     * @notice Computes the amount of [bonded] tokens that would be purchased for `@tokenAmount(self.contributionToken(): address, _value)`
+     * @notice Computes the amount of governance tokens that would be minted for `@tokenAmount(self.contributionToken(): address, _value)`
      * @param _value The amount of contribution tokens to be used in that computation
     */
     function contributionToTokens(uint256 _value) public view isInitialized returns (uint256) {
